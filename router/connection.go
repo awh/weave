@@ -1,6 +1,7 @@
 package router
 
 import (
+	"encoding/hex"
 	"fmt"
 	"net"
 	"strconv"
@@ -51,6 +52,8 @@ type LocalConnection struct {
 	actionChan    chan<- ConnectionAction
 	finished      <-chan struct{} // closed to signal that actorLoop has finished
 	forwarder     OverlayForwarder
+	localSAKey    []byte
+	remoteSAKey   []byte
 }
 
 type ConnectionAction func() error
@@ -97,7 +100,8 @@ func StartLocalConnection(connRemote *RemoteConnection, tcpConn *net.TCPConn, ud
 		remoteUDPAddr:    udpAddr,
 		uid:              randUint64(),
 		actionChan:       actionChan,
-		finished:         finished}
+		finished:         finished,
+		localSAKey:       randBytes(20)}
 	go conn.run(actionChan, finished, acceptNewPeer)
 }
 
@@ -257,6 +261,9 @@ func (conn *LocalConnection) makeFeatures() map[string]string {
 		"UID":             fmt.Sprint(conn.local.UID),
 		"ConnID":          fmt.Sprint(conn.uid),
 	}
+	if conn.Router.UsingPassword() {
+		features["InitialSAKey"] = hex.EncodeToString(conn.localSAKey)
+	}
 	conn.Router.Overlay.AddFeaturesTo(features)
 	return features
 }
@@ -279,6 +286,15 @@ func (features features) Get(key string) string {
 func (conn *LocalConnection) parseFeatures(features features) (*Peer, error) {
 	if err := features.MustHave([]string{"PeerNameFlavour", "Name", "NickName", "UID", "ConnID"}); err != nil {
 		return nil, err
+	}
+
+	if initialSAKey, ok := features["InitialSAKey"]; ok {
+		if remoteSAKey, err := hex.DecodeString(initialSAKey); err == nil {
+			conn.remoteSAKey = remoteSAKey
+		}
+	}
+	if conn.Router.UsingPassword() && conn.remoteSAKey == nil {
+		return nil, fmt.Errorf("Field InitialSAKey is missing")
 	}
 
 	remotePeerNameFlavour := features.Get("PeerNameFlavour")
