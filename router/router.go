@@ -2,6 +2,7 @@ package router
 
 import (
 	"fmt"
+	"github.com/weaveworks/weave/ipsec"
 	"net"
 	"sync"
 	"time"
@@ -30,6 +31,7 @@ type Config struct {
 	PacketLogging      PacketLogging
 	Bridge             Bridge
 	Overlay            Overlay
+	IPsec              *ipsec.IPsec
 }
 
 type PacketLogging interface {

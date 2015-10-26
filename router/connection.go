@@ -205,6 +205,17 @@ func (conn *LocalConnection) run(actionChan <-chan ConnectionAction, finished ch
 		SendControlMessage: conn.sendOverlayControlMessage,
 		Features:           intro.Features,
 	}
+
+	// Configure IPsec prior to forwarder initialisation
+	if conn.Router.IPsec != nil {
+		localIP := conn.TCPConn.LocalAddr().(*net.TCPAddr).IP
+		remoteIP := conn.TCPConn.RemoteAddr().(*net.TCPAddr).IP
+		if err = conn.Router.IPsec.ProtectConnection(localIP, remoteIP,
+			conn.localSAKey, conn.remoteSAKey); err != nil {
+			return
+		}
+	}
+
 	if conn.forwarder, err = conn.Router.Overlay.MakeForwarder(params); err != nil {
 		return
 	}

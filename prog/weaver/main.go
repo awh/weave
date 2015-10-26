@@ -18,6 +18,7 @@ import (
 	. "github.com/weaveworks/weave/common"
 	"github.com/weaveworks/weave/common/docker"
 	"github.com/weaveworks/weave/ipam"
+	"github.com/weaveworks/weave/ipsec"
 	"github.com/weaveworks/weave/nameserver"
 	weavenet "github.com/weaveworks/weave/net"
 	"github.com/weaveworks/weave/net/address"
@@ -198,6 +199,11 @@ func main() {
 	overlays.Add("sleeve", sleeve)
 	overlays.SetCompatOverlay(sleeve)
 	config.Overlay = overlays
+
+	config.IPsec = ipsec.NewIPsec()
+	if err := config.IPsec.Flush(); err != nil {
+		Log.Fatal("Unable to flush IPsec state", err)
+	}
 
 	if routerName == "" {
 		if iface == nil {
