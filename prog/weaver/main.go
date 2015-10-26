@@ -188,9 +188,6 @@ func main() {
 	} else {
 		config.Password = []byte(password)
 		Log.Println("Communication between peers is encrypted.")
-
-		// fastdp doesn't support encryption
-		fastDPOverlay = nil
 	}
 
 	overlays := weave.NewOverlaySwitch()

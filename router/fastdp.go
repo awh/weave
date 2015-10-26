@@ -520,11 +520,6 @@ type fastDatapathForwarder struct {
 
 func (fastdp fastDatapathOverlay) MakeForwarder(
 	params ForwarderParams) (OverlayForwarder, error) {
-	if params.Crypto != nil {
-		// No encryption suport in fastdp.  The weaver main.go
-		// is responsible for ensuring this doesn't happen.
-		log.Fatal("Attempt to use FastDatapath with encryption")
-	}
 
 	vxlanVportID := fastdp.mainVxlanVportID
 	remoteAddr := params.RemoteAddr
