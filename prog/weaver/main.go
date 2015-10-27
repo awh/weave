@@ -195,9 +195,9 @@ func main() {
 	if fastDPOverlay != nil {
 		overlays.Add("fastdp", fastDPOverlay)
 	}
-	sleeve := weave.NewSleeveOverlay(config.Port)
-	overlays.Add("sleeve", sleeve)
-	overlays.SetCompatOverlay(sleeve)
+	//sleeve := weave.NewSleeveOverlay(config.Port)
+	//overlays.Add("sleeve", sleeve)
+	//overlays.SetCompatOverlay(sleeve)
 	config.Overlay = overlays
 
 	config.IPsec = ipsec.NewIPsec()
