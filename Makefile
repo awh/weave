@@ -63,7 +63,7 @@ all: $(WEAVE_EXPORT)
 testrunner: $(RUNNER_EXE) $(TEST_TLS_EXE)
 
 $(WEAVER_EXE) $(WEAVEPROXY_EXE) $(WEAVEUTIL_EXE): common/*.go common/*/*.go net/*.go net/*/*.go
-$(WEAVER_EXE): router/*.go ipam/*.go ipam/*/*.go db/*.go nameserver/*.go prog/weaver/*.go
+$(WEAVER_EXE): router/*.go ipam/*.go ipam/*/*.go ipsec/*.go db/*.go nameserver/*.go prog/weaver/*.go
 $(WEAVEPROXY_EXE): proxy/*.go prog/weaveproxy/*.go
 $(WEAVEUTIL_EXE): prog/weaveutil/*.go net/*.go
 $(SIGPROXY_EXE): prog/sigproxy/*.go

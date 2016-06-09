@@ -22,6 +22,7 @@ import (
 	"github.com/weaveworks/weave/common/docker"
 	"github.com/weaveworks/weave/db"
 	"github.com/weaveworks/weave/ipam"
+	"github.com/weaveworks/weave/ipsec"
 	"github.com/weaveworks/weave/nameserver"
 	weavenet "github.com/weaveworks/weave/net"
 	"github.com/weaveworks/weave/net/address"
@@ -268,6 +269,10 @@ func main() {
 	db, err := db.NewBoltDB(dbPrefix + "data.db")
 	checkFatal(err)
 	defer db.Close()
+
+	if err := ipsec.NewIPsec().Flush(); err != nil {
+		Log.Fatal(err)
+	}
 
 	router := weave.NewNetworkRouter(config, networkConfig, name, nickName, overlay, db)
 	Log.Println("Our name is", router.Ourself)
